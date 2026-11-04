@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<title>ResumeForge</title>
+<meta name="description" content="Build a clean, modern resume in your browser. Fill in a form, watch the live preview, and save it as a PDF. Your details never leave your device.">
+<meta name="theme-color" content="#e9ecf1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0f14" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ResumeForge">
+<meta property="og:description" content="Build a clean, modern resume in your browser and save it as a PDF. Your details never leave your device.">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<noscript><p class="noscript">ResumeForge needs JavaScript to build your resume. Turn it on in your browser and reload the page.</p></noscript>
+
+<header class="topbar">
+  <h1 class="brand">
+    <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 2h6.5a3.5 3.5 0 0 1 1.2 6.8L13 14h-2.3L8.7 9H5v5H3V2zm2 2v3h4.4a1.5 1.5 0 0 0 0-3H5z" fill="#fff"/></svg></span>
+    <span>Resume<b>Forge</b></span>
+  </h1>
+  <span class="status" id="status" role="status" aria-live="polite"></span>
+  <div class="actions">
+    <button class="btn bar" data-act="sample" type="button">Load sample</button>
+    <button class="btn bar" data-act="clear" type="button">Clear all</button>
+    <button class="btn bar" data-act="import" type="button">Import</button>
+    <button class="btn bar" data-act="print" type="button">Download</button>
+    <button class="btn primary" data-act="print" type="button" title="In the print dialog, choose Save as PDF as the destination">Print PDF</button>
+  </div>
+  <input type="file" id="import-file" accept="application/json,.json" hidden>
+</header>
+
+<div class="tabs" role="tablist" aria-label="View">
+  <button type="button" role="tab" data-act="tab" data-view="edit" aria-selected="true">Edit</button>
+  <button type="button" role="tab" data-act="tab" data-view="preview" aria-selected="false">Preview</button>
+</div>
+
+<main class="app" id="app" data-view="edit">
+  <section class="editor" id="editor" aria-label="Resume details">
+
+    <div class="panel">
+      <div class="panel-head"><h2>Design</h2></div>
+      <div class="seg" role="group" aria-label="Template">
+        <button type="button" data-act="tpl" data-v="modern">Modern</button>
+        <button type="button" data-act="tpl" data-v="classic">Classic</button>
+        <button type="button" data-act="tpl" data-v="minimal">Minimal</button>
+      </div>
+      <div class="grid">
+        <div class="field">
+          <label for="set-font">Typeface</label>
+          <select id="set-font" data-set="font">
+            <option value="sans">Public Sans</option>
+            <option value="serif">Source Serif 4</option>
+            <option value="plex">IBM Plex Sans</option>
+          </select>
+        </div>
+        <div class="field">
+          <label id="accent-label">Accent colour</label>
+          <div class="swatches" role="group" aria-labelledby="accent-label" id="swatches"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>About you</h2></div>
+      <div class="photo-row">
+        <div class="photo-preview" id="photo-preview" aria-hidden="true">+</div>
+        <div class="photo-actions">
+          <div class="btn-row">
+            <button type="button" class="btn" data-act="photo-pick">Upload photo</button>
+            <button type="button" class="btn" data-act="photo-remove" id="photo-remove" disabled>Remove</button>
+          </div>
+          <p class="hint">Optional. It is cropped square, resized and kept only in this browser.</p>
+        </div>
+        <input type="file" id="photo-file" accept="image/*" hidden>
+      </div>
+      <div class="grid">
+        <div class="field full"><label for="p-name">Full name</label><input id="p-name" data-path="personal.name" autocomplete="name"></div>
+        <div class="field full"><label for="p-title">Professional title</label><input id="p-title" data-path="personal.title" placeholder="e.g. Frontend Developer"></div>
+        <div class="field"><label for="p-email">Email</label><input id="p-email" type="email" data-path="personal.email" autocomplete="email"></div>
+        <div class="field"><label for="p-phone">Phone</label><input id="p-phone" data-path="personal.phone" autocomplete="tel"></div>
+        <div class="field full"><label for="p-location">Location</label><input id="p-location" data-path="personal.location" placeholder="City, Country"></div>
+        <div class="field"><label for="p-website">Website</label><input id="p-website" data-path="personal.website" placeholder="yoursite.dev"></div>
+        <div class="field"><label for="p-linkedin">LinkedIn</label><input id="p-linkedin" data-path="personal.linkedin" placeholder="linkedin.com/in/you"></div>
+        <div class="field full"><label for="p-github">GitHub</label><input id="p-github" data-path="personal.github" placeholder="github.com/you"></div>
+        <div class="field full"><label for="p-summary">Profile summary</label><textarea id="p-summary" data-path="personal.summary" rows="4" placeholder="Two or three sentences on who you are and what you do best."></textarea></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Experience</h2><button class="btn" type="button" data-act="add" data-list="experience">+ Add</button></div>
+      <div id="list-experience" class="list"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Projects</h2><button class="btn" type="button" data-act="add" data-list="projects">+ Add</button></div>
+      <div id="list-projects" class="list"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Education</h2><button class="btn" type="button" data-act="add" data-list="education">+ Add</button></div>
+      <div id="list-education" class="list"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Certifications</h2><button class="btn" type="button" data-act="add" data-list="certifications">+ Add</button></div>
+      <div id="list-certifications" class="list"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Awards</h2><button class="btn" type="button" data-act="add" data-list="awards">+ Add</button></div>
+      <div id="list-awards" class="list"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Languages</h2><button class="btn" type="button" data-act="add" data-list="languages">+ Add</button></div>
+      <div id="list-languages" class="list"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Skills</h2></div>
+      <div class="field">
+        <label for="skill-input">Type a skill and press Enter</label>
+        <div class="chips" id="chips"><input id="skill-input" autocomplete="off" placeholder="e.g. React"></div>
+      </div>
+      <p class="hint">Everything is saved in this browser as you type. Use Export to keep a backup file.</p>
+    </div>
+  </section>
+
+  <section class="preview" id="preview" aria-label="Live preview">
+    <div class="preview-meta" id="meta">1 page</div>
+    <div class="stage" id="stage"><article id="resume"><div class="inner" id="inner"></div></article></div>
+  </section>
+</main>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
