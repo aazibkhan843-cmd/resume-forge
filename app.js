@@ -74,7 +74,6 @@
   var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var LEVELS = ["Native", "Fluent", "Advanced", "Intermediate", "Basic"];
   function withId(x) { x = x || {}; if (!x.id) x.id = uid(); return x; }
-
   /* Turns older free-text dates ("Jul 2024", "2020") into the YYYY-MM value a month picker needs. */
   function toMonth(v) {
     v = String(v == null ? "" : v).trim();
@@ -484,8 +483,8 @@
     }
     $("#photo-remove").disabled = !has;
   }
-  $("#photo-file").addEventListener("change", function (e) {
-        /* ---------- photo crop ---------- */
+
+    /* ---------- photo crop ---------- */
   (function () {
     var modal = $("#crop"), cv = $("#crop-canvas"), zoomEl = $("#crop-zoom");
     var cctx = cv.getContext("2d"), OUT = 360;
@@ -609,26 +608,6 @@
       closeCrop();
     });
   })();
-    var f = e.target.files[0]; e.target.value = "";
-    if (!f) return;
-    if (!/^image\//.test(f.type)) { setStatus("Choose an image file (JPG, PNG or WebP)"); return; }
-    var fr = new FileReader();
-    fr.onload = function () {
-      var img = new Image();
-      img.onload = function () {
-        var size = 360, c = document.createElement("canvas");
-        c.width = c.height = size;
-        var ctx = c.getContext("2d"), side = Math.min(img.width, img.height);
-        ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, size, size);
-        ctx.drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, size, size);
-        S.personal.photo = c.toDataURL("image/jpeg", 0.85);
-        renderPhotoUI(); changed();
-      };
-      img.onerror = function () { setStatus("Could not read that image"); };
-      img.src = fr.result;
-    };
-    fr.readAsDataURL(f);
-  });
 
   /* ---------- boot ---------- */
   renderStatic();
