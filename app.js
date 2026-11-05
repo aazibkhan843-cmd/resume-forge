@@ -74,6 +74,132 @@
   var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var LEVELS = ["Native", "Fluent", "Advanced", "Intermediate", "Basic"];
   function withId(x) { x = x || {}; if (!x.id) x.id = uid(); return x; }
+
+    /* ---------- photo crop ---------- */
+  (function () {
+    var modal = $("#crop"), cv = $("#crop-canvas"), zoomEl = $("#crop-zoom");
+    var cctx = cv.getContext("2d"), OUT = 360;
+    var img = null, zoom = 1, cx = 0, cy = 0, drag = null, opener = null;
+
+    function side() { return Math.min(img.width, img.height) / zoom; }
+    function clamp() {
+      var h = side() / 2;
+      cx = Math.min(Math.max(cx, h), img.width - h);
+      cy = Math.min(Math.max(cy, h), img.height - h);
+    }
+    function paint(ctx, size, guide) {
+      var s = side();
+      ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, size, size);
+      ctx.drawImage(img, cx - s / 2, cy - s / 2, s, s, 0, 0, size, size);
+      if (!guide) return;
+      var r = size / 2 - 6;
+      ctx.save();
+      ctx.fillStyle = "rgba(0,0,0,.55)";
+      ctx.beginPath(); ctx.rect(0, 0, size, size); ctx.arc(size / 2, size / 2, r, 0, Math.PI * 2);
+      ctx.fill("evenodd");
+      ctx.strokeStyle = "#fff"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(size / 2, size / 2, r, 0, Math.PI * 2); ctx.stroke();
+      ctx.restore();
+    }
+    function redraw() { clamp(); paint(cctx, cv.width, true); }
+    function setZoom(z) {
+      zoom = Math.min(4, Math.max(1, z));
+      zoomEl.value = zoom;
+      redraw();
+    }
+
+    function openCrop(image) {
+      img = image; zoom = 1; cx = img.width / 2; cy = img.height / 2;
+      zoomEl.value = 1;
+      opener = document.activeElement;
+      modal.hidden = false;
+      redraw();
+      cv.focus();
+    }
+    function closeCrop() {
+      modal.hidden = true; img = null; drag = null;
+      if (opener && opener.focus) opener.focus();
+    }
+
+    /* choose a file */
+    $("#photo-file").addEventListener("change", function (e) {
+      var f = e.target.files[0]; e.target.value = "";
+      if (!f) return;
+      if (!/^image\//.test(f.type)) { setStatus("Choose an image file (JPG, PNG or WebP)"); return; }
+      var fr = new FileReader();
+      fr.onload = function () {
+        var im = new Image();
+        im.onload = function () { openCrop(im); };
+        im.onerror = function () { setStatus("Could not read that image"); };
+        im.src = fr.result; /* data: URL, allowed by your img-src policy */
+      };
+      fr.readAsDataURL(f);
+    });
+
+    /* drag to move */
+    cv.addEventListener("pointerdown", function (e) {
+      if (!img) return;
+      drag = { x: e.clientX, y: e.clientY, cx: cx, cy: cy };
+      cv.setPointerCapture(e.pointerId);
+      cv.classList.add("dragging");
+    });
+    cv.addEventListener("pointermove", function (e) {
+      if (!drag) return;
+      var k = side() / cv.getBoundingClientRect().width;
+      cx = drag.cx - (e.clientX - drag.x) * k;
+      cy = drag.cy - (e.clientY - drag.y) * k;
+      redraw();
+    });
+    function endDrag() { drag = null; cv.classList.remove("dragging"); }
+    cv.addEventListener("pointerup", endDrag);
+    cv.addEventListener("pointercancel", endDrag);
+
+    /* zoom: slider and mouse wheel */
+    zoomEl.addEventListener("input", function () { setZoom(parseFloat(zoomEl.value)); });
+    cv.addEventListener("wheel", function (e) {
+      if (!img) return;
+      e.preventDefault();
+      setZoom(zoom * (e.deltaY < 0 ? 1.08 : 1 / 1.08));
+    }, { passive: false });
+
+    /* keyboard: arrows move, + / - zoom, Esc closes, Tab stays inside the dialog */
+    modal.addEventListener("keydown", function (e) {
+      if (!img) return;
+      if (e.key === "Escape") { e.preventDefault(); closeCrop(); return; }
+      if (e.key === "Tab") {
+        var items = $$("button, input, canvas", modal).filter(function (n) { return !n.disabled; });
+        var first = items[0], last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        return;
+      }
+      if (document.activeElement !== cv) return;
+      var step = side() * 0.03, used = true;
+      if (e.key === "ArrowLeft") cx -= step;
+      else if (e.key === "ArrowRight") cx += step;
+      else if (e.key === "ArrowUp") cy -= step;
+      else if (e.key === "ArrowDown") cy += step;
+      else if (e.key === "+" || e.key === "=") setZoom(zoom + 0.1);
+      else if (e.key === "-") setZoom(zoom - 0.1);
+      else used = false;
+      if (used) { e.preventDefault(); redraw(); }
+    });
+    modal.addEventListener("mousedown", function (e) { if (e.target === modal) closeCrop(); });
+
+    /* buttons */
+    $("#crop-cancel").addEventListener("click", closeCrop);
+    $("#crop-apply").addEventListener("click", function () {
+      if (!img) return;
+      clamp();
+      var out = document.createElement("canvas");
+      out.width = out.height = OUT;
+      paint(out.getContext("2d"), OUT, false);
+      S.personal.photo = out.toDataURL("image/jpeg", 0.85);
+      renderPhotoUI(); changed();
+      closeCrop();
+    });
+  })();
+  
   /* Turns older free-text dates ("Jul 2024", "2020") into the YYYY-MM value a month picker needs. */
   function toMonth(v) {
     v = String(v == null ? "" : v).trim();
