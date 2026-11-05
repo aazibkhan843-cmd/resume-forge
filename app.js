@@ -484,7 +484,7 @@
     $("#photo-remove").disabled = !has;
   }
 
-    /* ---------- photo crop ---------- */
+  /* ---------- photo crop ---------- */
   (function () {
     var modal = $("#crop"), cv = $("#crop-canvas"), zoomEl = $("#crop-zoom");
     var cctx = cv.getContext("2d"), OUT = 360;
