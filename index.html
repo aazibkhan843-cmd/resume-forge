@@ -34,7 +34,7 @@
     <button class="btn bar" data-act="sample" type="button">Load sample</button>
     <button class="btn bar" data-act="clear" type="button">Clear all</button>
     <button class="btn bar" data-act="import" type="button">Import</button>
-    <button class="btn bar" data-act="print" type="button">Download</button>
+    <button class="btn bar" data-act="export" type="button" title="Save a backup file you can re-import later">Export</button>
     <button class="btn primary" data-act="print" type="button" title="In the print dialog, choose Save as PDF as the destination">Print PDF</button>
   </div>
   <input type="file" id="import-file" accept="application/json,.json" hidden>
@@ -80,23 +80,7 @@
             <button type="button" class="btn" data-act="photo-pick">Upload photo</button>
             <button type="button" class="btn" data-act="photo-remove" id="photo-remove" disabled>Remove</button>
           </div>
-     
-   <div class="crop-backdrop" id="crop" role="dialog" aria-modal="true" aria-labelledby="crop-title" hidden>
-   <div class="crop-box">
-    <h2 id="crop-title">Adjust your photo</h2>
-    <p class="hint">Drag the photo to move it. Zoom with the slider or your mouse wheel. The circle shows what stays visible in round templates.</p>
-    <canvas id="crop-canvas" width="360" height="360" tabindex="0" aria-label="Photo crop area. Use the arrow keys to move the photo."></canvas>
-    <div class="crop-zoom">
-      <label for="crop-zoom">Zoom</label>
-      <input type="range" id="crop-zoom" min="1" max="4" step="0.01" value="1">
-    </div
-      
-    <div class="btn-row crop-actions">
-      <button type="button" class="btn" id="crop-cancel">Cancel</button>
-      <button type="button" class="btn primary" id="crop-apply">Use photo</button>
-    </div>
-  </div>
-</div>
+          <p class="hint">Optional. It is cropped square, resized and kept only in this browser.</p>
         </div>
         <input type="file" id="photo-file" accept="image/*" hidden>
       </div>
@@ -158,23 +142,6 @@
     <div class="stage" id="stage"><article id="resume"><div class="inner" id="inner"></div></article></div>
   </section>
 </main>
-
-  <!-- Photo crop dialog -->
-<div class="crop-backdrop" id="crop" role="dialog" aria-modal="true" aria-labelledby="crop-title" hidden>
-  <div class="crop-box">
-    <h2 id="crop-title">Adjust your photo</h2>
-    <p class="hint">Drag the photo to move it. Zoom with the slider or your mouse wheel. The circle shows what stays visible in round templates.</p>
-    <canvas id="crop-canvas" width="360" height="360" tabindex="0" aria-label="Photo crop area. Use the arrow keys to move the photo."></canvas>
-    <div class="crop-zoom">
-      <label for="crop-zoom">Zoom</label>
-      <input type="range" id="crop-zoom" min="1" max="4" step="0.01" value="1">
-    </div>
-    <div class="btn-row crop-actions">
-      <button type="button" class="btn" id="crop-cancel">Cancel</button>
-      <button type="button" class="btn primary" id="crop-apply">Use photo</button>
-    </div>
-  </div>
-</div>
 
 <script src="assets/app.js"></script>
 </body>
