@@ -83,19 +83,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .field input, .field textarea, .field select {
   width: 100%; background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px;
 }
-
-/* ---------- photo crop dialog ---------- */
-.crop-backdrop { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(8, 11, 16, .72); overflow-y: auto; }
-.crop-backdrop[hidden] { display: none; }
-.crop-box { width: 100%; max-width: 400px; max-height: 100%; overflow-y: auto; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, .4); }
-.crop-box h2 { margin: 0; font: 700 18px/1.2 var(--font-display); }
-#crop-canvas { width: 100%; max-width: 360px; aspect-ratio: 1; height: auto; margin: 0 auto; display: block; border-radius: 8px; background: var(--panel-2); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
-#crop-canvas.dragging { cursor: grabbing; }
-.crop-zoom { display: flex; align-items: center; gap: 12px; }
-.crop-zoom label { font-size: 12px; font-weight: 600; color: var(--muted); }
-.crop-zoom input { flex: 1; min-width: 0; accent-color: var(--ember); }
-.crop-actions { justify-content: flex-end; }
-
 .field textarea { resize: vertical; min-height: 72px; line-height: 1.4; }
 .field input:focus, .field textarea:focus, .field select:focus { outline: 2px solid var(--focus); outline-offset: 0; border-color: var(--focus); background: var(--panel); }
 
@@ -144,7 +131,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 #resume .entry { break-inside: avoid; margin-top: 10px; }
 #resume .entry:first-child { margin-top: 0; }
 #resume .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-#resume h3 { font-size: 14px; font-weight: 650; font-weight: 600; }
+#resume h3 { font-size: 14px; font-weight: 600; }
 #resume .dates { font-size: 12px; color: var(--rmute); white-space: nowrap; font-variant-numeric: tabular-nums; }
 #resume .sub { font-size: 12.5px; color: var(--rmute); margin-bottom: 3px; }
 #resume .entry ul { margin-top: 3px; }
@@ -204,7 +191,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 @media (max-width: 900px) {
   .tabs { display: flex; }
   .app { display: block; position: relative; }
-  .editor, .preview { height: 100%; }
+  .app { overflow: hidden; }
+  .editor, .preview { height: 100%; overflow: auto; }
   .editor { border-right: 0; }
   .app[data-view="edit"] .preview { display: none; }
   .app[data-view="preview"] .editor { display: none; }
@@ -227,14 +215,3 @@ button, input, select, textarea { font: inherit; color: inherit; }
   #resume .inner { min-height: 0; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
-/* ---------- photo crop dialog ---------- */
-.crop-backdrop { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(8, 11, 16, .72); overflow-y: auto; }
-.crop-backdrop[hidden] { display: none; }
-.crop-box { width: 100%; max-width: 400px; max-height: 100%; overflow-y: auto; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, .4); }
-.crop-box h2 { margin: 0; font: 700 18px/1.2 var(--font-display); }
-#crop-canvas { width: 100%; max-width: 360px; aspect-ratio: 1; height: auto; margin: 0 auto; display: block; border-radius: 8px; background: var(--panel-2); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
-#crop-canvas.dragging { cursor: grabbing; }
-.crop-zoom { display: flex; align-items: center; gap: 12px; }
-.crop-zoom label { font-size: 12px; font-weight: 600; color: var(--muted); }
-.crop-zoom input { flex: 1; min-width: 0; accent-color: var(--ember); }
-.crop-actions { justify-content: flex-end; }
